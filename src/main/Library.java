@@ -55,7 +55,20 @@ public class Library {
          Book book1 = this.find("それから");
          this.remove(book1);
         // this.list();
-         findAndPrint(null, "夏目漱石", null, 1991);
+         this.findAndPrint(null, "夏目漱石", null, 1991);
+
+         System.out.println("");
+
+         List<Book> orBookList = this.findOr(null, "夏目漱石", null, 1991);
+         for(Book book : orBookList) {
+             this.printBook(book);
+         }
+
+         System.out.println("");
+
+         // remove2  これは間違ったメソッドです！！削除はできてません
+         this.remove2("こころ", "夏目漱石", "青空文庫", 1991);
+         this.list();
 
          // ここで、findメソッドを使って、検索
 //         Book book = this.find("それから");
@@ -91,6 +104,108 @@ public class Library {
 //        }
 
      }
+
+     /**
+      * これは間違ったメソッドです！！削除はできません！！
+      * @param title
+      * @param author
+      * @param publisher
+      * @param publishYear
+      */
+     void remove2(String title, String author, String publisher, Integer publishYear){
+         Book book = createBook(title, author, publisher, publishYear);
+         shelf.remove(book);  // メソッドの引数には参照を渡しているので、
+         // つまり、メモリの番地の情報を渡しているので、shelfにもともと入れてあった要素とは違う参照のため、リストからは削除されません
+         // 正しく作用するには、findメソッドで探したBookオブジェクトの参照を引数に渡すのが正しいです
+         // 参照型のデータ型のオブジェクトは、参照渡しです つまり、メモリ番地を渡しているのです。
+     }
+
+
+     /**
+      * OR検索をして、いずれかの条件と一致したなら、その本を検索してリストに格納する
+      * メソッドの中でisMatchOrメソッドを呼び出す
+      * @param title
+      * @param authors
+      * @param publisher
+      * @param publishYear
+      * @return
+      */
+     List<Book> findOr(String title, String authors, String publisher, Integer publishYear) {
+         List<Book> result = new ArrayList<Book>();
+
+         for(Book book : this.shelf) {
+             if(this.isMatchOr(book, title, authors, publisher, publishYear) ) {
+                 result.add(book);
+             }
+         }
+         return result;
+     }
+
+
+     /**
+      * OR検索をする
+      * 引数のtitle authors publisher publishYearのいずれかの条件と一致すればtrueを返し、
+      * どれとも一致しない場合にfalseを返す
+      *
+      * @param book
+      * @param title
+      * @param authors
+      * @param publisher
+      * @param publishYear
+      * @return true:いずれかの条件と一致した<br /> false: いずれの条件とも一致しなかった
+      */
+     Boolean isMatchOr(Book book, String title, String authors, String publisher, Integer publishYear) {
+         // 条件は，title, authors, publisher, publishYearの4種類．
+         // null以外が指定された場合，検索条件として指定されたものとする．
+         // ここに，検索条件として与えられた条件いずれか(ORなので)を満たすか否かを判定する処理を書く．
+         // 検索条件を満たしていれば，trueを返し，満たしていなければfalseを返す．
+         Boolean result = false;
+         if(title != null) { // titleが nullじゃない時に比較する
+             if(Objects.equals(title, book.title)) {
+                 result = true;  // 一致したら、tureにする
+                 return result; // 条件でいずれか一つでも一致したら検索結果となるので、即returnして引数のresultを呼び出し元へ返す
+                 // もし、一致したら、以下は行われない
+             }
+                 // 一致しない時は OR検索だから result は まだ確定できないので、何もしない
+             // result はfalseのままになってる 次の条件に一致するのかどうか次に続ける
+         }
+         // titleが nullだったら、検索条件として指定されてないものとしてスルー
+
+         if(authors != null) {  // nullじゃなかったら比較する
+             if(Objects.equals(authors, book.authors)) {
+                 result = true;  // 一致したら trueにする
+                 return result; // 即このメソッド終了 引数のresultを呼び出し元へ返す
+                 // ここより以下は実行されない
+             }
+             // 一致しない時は OR検索だから result は まだ確定できないので、何もしない
+             // result はfalseのままになってる 次の条件に一致するのかどうか次に続ける
+         }
+        // authorsが nullだったら、検索条件として指定されてないものとしてスルー
+
+         if(publisher != null) { // nullじゃなかったら比較する
+             if(Objects.equals(publisher, book.publisher)) {
+                 result = true;  // 一致したら trueにする
+                 return result; // 即このメソッド終了 引数のresultを呼び出し元へ返す
+                 // ここより以下は実行されない
+             }
+             // 一致しない時は OR検索だから result は まだ確定できないので、何もしない
+             // result はfalseのままになってる 次の条件に一致するのかどうか次に続ける
+         }
+        // publisherが nullだったら、検索条件として指定されてないものとしてスルー
+
+         if(publishYear != null) { // nullじゃなかったら比較する
+             if(Objects.equals(publishYear, book.publishYear)) {
+                 result = true;  // 一致したら trueにする
+                 return result; // 即このメソッド終了 引数のresultを呼び出し元へ返す
+                 // ここより以下は実行されない
+             }
+             // OR検索で どの条件とも一致しない時は result は false
+         }
+        // publishYearが nullだったら、検索条件として指定されてないものとしてスルー
+         return result;  // ここまで来るということはどの条件にも会わず falseが返される
+     }
+
+
 
      /**
       * AND検索で得た結果を表示するfindAndPrintメソッド
@@ -135,7 +250,7 @@ public class Library {
       * @param authors
       * @param publisher
       * @param publishYear
-      * @return
+      * @return List<Book>
       */
      List<Book> findAnd(String title, String authors, String publisher, Integer publishYear) {
          List<Book> result = new ArrayList<Book>();
@@ -156,7 +271,7 @@ public class Library {
       * @param authors
       * @param publisher
       * @param publishYear
-      * @return true:一致した<br /> false:一致しない
+      * @return true:全ての条件に一致した<br /> false:全ての条件には一致しない
       */
      Boolean isMatch(Book book, String title, String authors, String publisher, Integer publishYear) {
          // 条件は，title, authors, publisher, publishYearの4種類．
