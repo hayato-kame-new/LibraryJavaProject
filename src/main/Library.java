@@ -11,7 +11,8 @@ public class Library {
 
     // メソッド宣言の外側で宣言された変数(このlist1のような場所で宣言された変数)は， フィールドと呼ばれます
     // 変数shelfを，フィールドに変更して，クラス内のメソッドから参照できるようにします
-     List<Book> shelf = new ArrayList<Book>();
+     List<Book> shelf = new ArrayList<Book>();  // このshelfは、mainメソッドでrunメソッドを呼び出した時に、
+     // runメソッドの中で this.addBooks(shelf);を実行してリストの中身を作っています
 
      /**
       * インスタンスメソッドです このクラス内ではthis.run()で呼び出せます
@@ -51,18 +52,21 @@ public class Library {
 //        System.out.printf("%s (%s) %s, %d%n", book1.title, book1.authors, book1.publisher, book1.publishYear);
 
          this.addBooks(shelf);
-         //   this.list();
+         Book book1 = this.find("それから");
+         this.remove(book1);
+        // this.list();
+         findAndPrint(null, "夏目漱石", null, 1991);
 
          // ここで、findメソッドを使って、検索
 //         Book book = this.find("それから");
 //         this.printBook(book);
 
          // ここで、findAndメソッドを使って、検索
-        // List<Book> booklist = this.findAnd("こころ", null, null, 1999);
-         List<Book> booklist = this.findAnd(null, null, "青空文庫", null);
-         for(Book book : booklist) {
-             this.printBook(book);
-         }
+        // List<Book> booklist = this.findAnd("こころ", null, null, 1999);  // 色々やって見て確認
+//         List<Book> booklist = this.findAnd(null, null, "青空文庫", null);
+//         for(Book book : booklist) {
+//             this.printBook(book);
+//         }
 
 
 //        Book book1 = shelf.get(0);
@@ -88,7 +92,51 @@ public class Library {
 
      }
 
+     /**
+      * AND検索で得た結果を表示するfindAndPrintメソッド
+      * このfindAndPrintメソッドの中では、引数に受け取った情報をそのままfindAndに渡して
+      *  そして，findAndの返り値であるList<Book>を変数に代入してからループで表示する
+      * @param title
+      * @param authors
+      * @param publisher
+      * @param publishYear
+      */
+     void findAndPrint(String title, String authors, String publisher, Integer publishYear) {
 
+//         List<Book> result = new ArrayList<Book>();
+//
+//         for(Book book : this.shelf) {
+//             if(this.isMatch(book, title, authors, publisher, publishYear) ) {
+//                 result.add(book);
+//             }
+//         }
+         List<Book> result = this.findAnd(title, authors, publisher, publishYear);
+         // AND検索で得たリストを表示する
+         for(Book book2 : result) {
+             System.out.printf("%s (%s) %s %d%n", book2.title, book2.authors, book2.publisher, book2.publishYear);
+         }
+
+     }
+
+
+     /**
+      * 格納された本を 登録から削除する
+      * @param book
+      */
+     void remove(Book book) {
+         // Listのremoveには，要素そのもの，もしくは，インデックスの２種類の値が渡せます
+         // 今回は、要素を渡して削除をします
+         this.shelf.remove(book);
+     }
+
+     /**
+      * this.isMatchを呼び出してAND検索をして、一致したらtrueが返されるので、検索結果のリストに格納してリストを返します
+      * @param title
+      * @param authors
+      * @param publisher
+      * @param publishYear
+      * @return
+      */
      List<Book> findAnd(String title, String authors, String publisher, Integer publishYear) {
          List<Book> result = new ArrayList<Book>();
 
@@ -100,7 +148,16 @@ public class Library {
          return result;
      }
 
-
+     /**
+      * AND検索をするメソッド 検索条件は4つ 検索条件が nullの時には検索条件が指定されてないとみなす
+      *
+      * @param book
+      * @param title
+      * @param authors
+      * @param publisher
+      * @param publishYear
+      * @return true:一致した<br /> false:一致しない
+      */
      Boolean isMatch(Book book, String title, String authors, String publisher, Integer publishYear) {
          // 条件は，title, authors, publisher, publishYearの4種類．
          // null以外が指定された場合，検索条件として指定されたものとする．
