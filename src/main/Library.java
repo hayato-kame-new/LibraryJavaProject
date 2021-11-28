@@ -161,7 +161,8 @@ public class Library {
          // 検索条件を満たしていれば，trueを返し，満たしていなければfalseを返す．
          Boolean result = false;
          if(title != null) { // titleが nullじゃない時に比較する
-             if(Objects.equals(title, book.title)) {
+             if(Objects.equals(title, book.getTitle())) {
+            // if(Objects.equals(title, book.title)) {
                  result = true;  // 一致したら、tureにする
                  return result; // 条件でいずれか一つでも一致したら検索結果となるので、即returnして引数のresultを呼び出し元へ返す
                  // もし、一致したら、以下は行われない
@@ -172,7 +173,8 @@ public class Library {
          // titleが nullだったら、検索条件として指定されてないものとしてスルー
 
          if(authors != null) {  // nullじゃなかったら比較する
-             if(Objects.equals(authors, book.authors)) {
+             if(Objects.equals(authors, book.getAuthors())) {
+            //  if(Objects.equals(authors, book.authors)) {
                  result = true;  // 一致したら trueにする
                  return result; // 即このメソッド終了 引数のresultを呼び出し元へ返す
                  // ここより以下は実行されない
@@ -183,7 +185,8 @@ public class Library {
         // authorsが nullだったら、検索条件として指定されてないものとしてスルー
 
          if(publisher != null) { // nullじゃなかったら比較する
-             if(Objects.equals(publisher, book.publisher)) {
+             if(Objects.equals(publisher, book.getPublisher())) {
+            //  if(Objects.equals(publisher, book.publisher)) {
                  result = true;  // 一致したら trueにする
                  return result; // 即このメソッド終了 引数のresultを呼び出し元へ返す
                  // ここより以下は実行されない
@@ -194,7 +197,8 @@ public class Library {
         // publisherが nullだったら、検索条件として指定されてないものとしてスルー
 
          if(publishYear != null) { // nullじゃなかったら比較する
-             if(Objects.equals(publishYear, book.publishYear)) {
+             if(Objects.equals(publishYear, book.getPublishYear())) {
+            // if(Objects.equals(publishYear, book.publishYear)) {
                  result = true;  // 一致したら trueにする
                  return result; // 即このメソッド終了 引数のresultを呼び出し元へ返す
                  // ここより以下は実行されない
@@ -228,7 +232,8 @@ public class Library {
          List<Book> result = this.findAnd(title, authors, publisher, publishYear);
          // AND検索で得たリストを表示する
          for(Book book2 : result) {
-             System.out.printf("%s (%s) %s %d%n", book2.title, book2.authors, book2.publisher, book2.publishYear);
+             System.out.printf("%s (%s) %s %d%n", book2.getTitle(), book2.getAuthors(), book2.getPublisher(), book2.getPublishYear());
+             // System.out.printf("%s (%s) %s %d%n", book2.title, book2.authors, book2.publisher, book2.publishYear);
          }
 
      }
@@ -280,7 +285,8 @@ public class Library {
          // 検索条件を満たしていれば，trueを返し，満たしていなければfalseを返す．
          Boolean result = false;
          if(title != null) { // titleが nullじゃない時に比較する
-             if(Objects.equals(title, book.title)) {
+             if(Objects.equals(title, book.getTitle())) {
+             // if(Objects.equals(title, book.title)) {
                  result = true;  // 一致したら、tureにする
              } else {
                  // 一致しない時は result は falseのままreturnする　AND検索だから
@@ -290,7 +296,8 @@ public class Library {
          // titleが nullだったら、検索条件として指定されてないものとしてスルー
 
          if(authors != null) {  // nullじゃなかったら比較する
-             if(Objects.equals(authors, book.authors)) {
+             if(Objects.equals(authors, book.getAuthors())) {
+            //  if(Objects.equals(authors, book.authors)) {
                  result = true;  // 一致したら trueにする
              } else {
                  // 一致しないなら、AND検索なのでここで即リターンしてfalseを呼び出し元へ返す
@@ -301,7 +308,8 @@ public class Library {
         // authorsが nullだったら、検索条件として指定されてないものとしてスルー
 
          if(publisher != null) { // nullじゃなかったら比較する
-             if(Objects.equals(publisher, book.publisher)) {
+             if(Objects.equals(publisher, book.getPublisher())) {
+            // if(Objects.equals(publisher, book.publisher)) {
                  result = true;  // 一致したら trueにする
              } else {
                  // 一致しないなら、AND検索なのでここで即リターンしてfalseを呼び出し元へ返す
@@ -312,7 +320,8 @@ public class Library {
         // publisherが nullだったら、検索条件として指定されてないものとしてスルー
 
          if(publishYear != null) { // nullじゃなかったら比較する
-             if(Objects.equals(publishYear, book.publishYear)) {
+             if(Objects.equals(publishYear, book.getPublishYear())) {
+             // if(Objects.equals(publishYear, book.publishYear)) {
                  result = true;  // 一致したら trueにする
              } else {
                  // 一致しないなら、AND検索なのでここで即リターンしてfalseを呼び出し元へ返す
@@ -333,7 +342,8 @@ public class Library {
       */
      Book find(String title) {
          for(Book book : shelf) {
-             if(Objects.equals(title, book.title)) {
+             if(Objects.equals(title, book.getTitle())) {
+             // if(Objects.equals(title, book.title)) {
                  return book;
              }
          }
@@ -375,10 +385,14 @@ public class Library {
      */
     Book createBook(String title, String authors, String publisher, Integer publishYear) {
         Book book = new Book();
-        book.title = title;
-        book.authors = authors;
-        book.publisher = publisher;
-        book.publishYear = publishYear;
+        book.setTitle(title);
+        book.setAuthors(authors);
+        book.setPublisher(publisher);
+        book.setPublishYear(publishYear);
+//        book.title = title;
+//        book.authors = authors;
+//        book.publisher = publisher;
+//        book.publishYear = publishYear;
         return book;
     }
 
@@ -389,10 +403,8 @@ public class Library {
     void printBook(Book book) {
         // どっちでもいいけど
 //        System.out.printf("%s (%s) %s, %d%n", book.title, book.authors, book.publisher, book.publishYear);
-        System.out.printf(
-                "%s,%s,%s,%d%n", book.title, book.authors,
-                book.publisher, book.publishYear
-            );
+     //   System.out.printf( "%s,%s,%s,%d%n", book.title, book.authors, book.publisher, book.publishYear);
+        System.out.printf( "%s,%s,%s,%d%n", book.getTitle(), book.getAuthors(), book.getPublisher(), book.getPublishYear());
     }
 
     /**

@@ -26,7 +26,8 @@ public class LibraryUtil {
                     continue;
                 }
                 String[] data = line.split(",");
-                Book book = this.createBook(data[0], data[1], data[2], data[3]);
+                Book book = this.createBook(data[0], data[1], data[2], data[3]);  // 引数がStringだから
+
                 books.add(book);
             }
         } catch(IOException e){
@@ -36,17 +37,22 @@ public class LibraryUtil {
         return Collections.unmodifiableList(books);
     }
 
+    // 引数がStringで
     @SuppressWarnings("deprecation")
     public Book createBook(String title, String authors, String publisher, String publishYear){
-        return this.createBook(title, authors, publisher, new Integer(publishYear));
+        return this.createBook(title, authors, publisher, new Integer(publishYear));  // 推奨されないけど、使う
     }
 
     public Book createBook(String title, String authors, String publisher, Integer publishYear){
         Book book = new Book();
-        book.title = title;
-        book.authors = authors;
-        book.publisher = publisher;
-        book.publishYear = publishYear;
+        book.setTitle(title);
+        book.setAuthors(authors);
+        book.setPublisher(publisher);
+        book.setPublishYear(publishYear);
+//        book.title = authors;
+//        book.authors = authors;
+//        book.publisher = publisher;
+//        book.publishYear = publishYear;
 
         return book;
     }
