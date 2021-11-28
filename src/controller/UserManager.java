@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,9 +15,72 @@ public class UserManager {
      List<User> usersList = new ArrayList<User>();  // このshelfは、mainメソッドでrunメソッドを呼び出した時に、
      // runメソッドの中で this.addUsers(usersList);を実行してリストの中身を作っています
 
-    void run() {
+     /**
+      * mainパッケージのLibraryクラス内の mainメソッドに
+      * このクラスのインスタンスを生成して、runメソッドを実行します
+      * 異なるパッケージからもこのクラスが見えるように、このクラス宣言にアクセス修飾子をpublicにして、このrunメソッドもpublicにすること
+      */
+    public void run() {
         // プロジェクトのルートフォルダにおいたusers.csvファイルを読み込む
         this.addUsers(this.usersList);  // 引数は、自分自身のインスタンスフィールドです。このメソッドを使って、フィールドの usersList に要素を代入します
+
+        User myself = new User();
+        myself.setId(8);
+        myself.setName("竹村圭織");
+        myself.setGender(2);
+        myself.setAge(6);
+        myself.setPass("f6e2e52bc7b6565928e2d0d18d1b074d5c21571da95d4ec250bc3168ddd37bd2");
+        myself.setRoll(0);
+        myself.setMail("kao@kao.com");
+        myself.setTel("090-0000-1111");
+
+        this.add(myself);
+
+        User user9 = new User();
+        user9.setId(9);
+        user9.setName("竹村恵");
+        user9.setGender(2);
+        user9.setAge(46);
+        user9.setPass("f6e2e52bc7b6565928e2d0d18d1b074d5c21571da95d4ec250bc3168ddd37bd2");
+        user9.setRoll(1);
+        user9.setMail("me@me.com");
+        user9.setTel("090-2222-1111");
+
+        this.add(user9);
+
+        // OR検索を実行する 結果を表示する 検索に成功する例
+        List<User> searchList = this.findOr(1, "日本花子", 1, null, null , null);
+        for(User searchUser : searchList) {
+            this.print(searchUser);
+        }
+
+        // OR検索を実行する 結果を表示する 検索に失敗する例 完全一致で検索するため 曖昧検索をすると失敗する
+        List<User> searchList2 = this.findOr(null, "花子", null, null, null , null);
+        for(User searchUser : searchList2) {
+            this.print(searchUser);
+        }
+
+        // 列挙子を使ってユーザの一覧を順に表示していく 列挙子を使うと、参照専門の集合なので安全に参照ができる   書き換えられる心配が無いため
+        // Iterator型 (列挙子) という集合
+        Iterator<User> iterator = this.iterator();  // 自分自身のiterator()インスタンスメソッドを呼び出せばいい
+        // 列挙子を使った繰り返し 重要
+        while(iterator.hasNext()) {
+            User user = iterator.next();
+            this.print(user);
+        }
+
+    }
+
+    /**
+     * 参照しかできないUserの集合を返す   Iterator型 (列挙子) という集合を返す
+     * UserManagerクラスの外でも、安全に全ユーザを参照できるようになります
+     * Iterator型    参照専門の集合を表す型 日本語では， 列挙子という
+     * ListからIteratorに変換するには、インスタンスメソッドのiterator()を呼び出す
+     *
+     * @return this.usersList.iterator()
+     */
+    public Iterator<User> iterator() {  // java.util.Iterator
+        return this.usersList.iterator();
     }
 
     /**
@@ -50,7 +114,7 @@ public class UserManager {
      * @param user
      */
     void print(User user) {
-        System.out.printf("%d %s %d %d %s %d %s %s", user.getId(), user.getName(), user.getGender(), user.getAge(), user.getPass(), user.getRoll(), user.getMail(), user.getTel());
+        System.out.printf("%d %s %d %d %s %d %s %s%n", user.getId(), user.getName(), user.getGender(), user.getAge(), user.getPass(), user.getRoll(), user.getMail(), user.getTel());
     }
 
     /**
@@ -196,6 +260,20 @@ public class UserManager {
        // telが nullだったら、検索条件として指定されてないものとしてスルー
 
         return result;  // ここまで来るということはどの条件にもあわず falseが返される
+    }
+
+    /**
+     * インスタンスフィールドのusersListに格納されたUserインスタンスを 登録から削除する
+     * 引数に受け取ったUserオブジェクトを登録から削除します
+     * @param user
+     * @return
+     */
+    Boolean delete(User user) {
+
+        // Listのremoveには，要素そのもの，もしくは，インデックスの２種類の値が渡せます
+        // 今回は、要素を渡して削除をします Listのremoveは 戻り値がboolean型ですので Boolean型で受けられます
+        Boolean result = this.usersList.remove(user);
+        return result;
     }
 
 

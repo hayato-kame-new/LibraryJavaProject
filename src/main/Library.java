@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import controller.UserManager;
 import model.Book;
 import util.LibraryUtil;
 
@@ -15,8 +16,9 @@ public class Library {
      // runメソッドの中で this.addBooks(shelf);を実行してリストの中身を作っています
 
      /**
-      * インスタンスメソッドです このクラス内ではthis.run()で呼び出せます
-      * メインメソッドからはインスタンスを生成して、インスタンス.run()で呼び出す
+      * 作成したインスタンスメソッドをrun メソッドから呼び出して本の情報を操作していきます
+      *
+      * mainメソッドの中では この自クラスLibraryインスタンスを生成して、インスタンス.run()で呼び出す
       * thisは自分自身のインスタンスです
       * runメソッド内で， Bookの実体を作成
       */
@@ -445,5 +447,7 @@ public class Library {
     public static void main(String[] args) {
         Library lib = new Library();
         lib.run();
+        UserManager userManager = new UserManager();
+        userManager.run();
     }
 }
