@@ -35,6 +35,7 @@ public class History {
         this.user = user;
     }
 
+
     /**
      * 貸し出し中であるかを判定するメソッド
      * 貸し出し中であれば，true， 貸し出し中でなければfalseを返す
@@ -48,6 +49,31 @@ public class History {
             return true;  // 貸出中なら tureを返す
         }
         return false;
+    }
+
+    String lentStr() {
+        String str = "";
+        if(this.isLent()) {
+            str = "貸し出し中";
+        } else {
+            str = "配架中";
+        }
+        return str;
+    }
+
+    /**
+     *  履歴の情報を画面に出力する
+     *  publicにする
+     */
+    public void print() {
+        System.out.printf("%s, %s, %s, %d (%s) %s(%s; %d)",
+                this.book.getTitle(), this.book.getAuthors(), this.book.getPublisher(), this.book.getPublishYear(), this.lentStr(),
+                this.user.getName(), this.user.genderStr(), this.user.getAge());
+       System.out.print(this.lendDate.toString());
+       System.out.println("~");
+       if(this.returnDate != null) {
+           System.out.println(this.returnDate.toString());
+       }
     }
 
     // アクセッサ

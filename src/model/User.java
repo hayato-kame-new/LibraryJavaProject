@@ -15,7 +15,7 @@ public class User {
     // 他のフィールドも追加する
     private String pass;  // これは、ハッシュ化した後のパスワード
 
-    private Integer roll;
+    private Integer roll;  // 0:一般   1:管理者
 
     private String mail;
 
@@ -50,6 +50,20 @@ public class User {
         this.roll = roll;
         this.mail = mail;
         this.tel = tel;
+    }
+
+    /**
+     * 性別を文字で表すインスタンスメソッド
+     * @return str
+     */
+    public String genderStr() {
+        String str = "";
+        if(this.gender == 1) {
+            str = "男";
+        }else if (this.gender == 2) {
+            str = "女";
+        }
+        return str;
     }
 
     // アクセッサ
