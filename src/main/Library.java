@@ -1,11 +1,13 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 import controller.UserManager;
 import model.Book;
+import model.User;
 import util.LibraryUtil;
 
 public class Library {
@@ -14,6 +16,8 @@ public class Library {
     // 変数shelfを，フィールドに変更して，クラス内のメソッドから参照できるようにします
      List<Book> shelf = new ArrayList<Book>();  // このshelfは、mainメソッドでrunメソッドを呼び出した時に、
      // runメソッドの中で this.addBooks(shelf);を実行してリストの中身を作っています
+
+     UserManager manager = new UserManager();
 
      /**
       * 作成したインスタンスメソッドをrun メソッドから呼び出して本の情報を操作していきます
@@ -54,6 +58,16 @@ public class Library {
 //        System.out.printf("%s (%s) %s, %d%n", book1.title, book1.authors, book1.publisher, book1.publishYear);
 
          this.addBooks(shelf);
+         this.registerUsers();
+         Iterator<User> iterator = manager.iterator();
+      // 列挙子を使った繰り返し 重要
+         while(iterator.hasNext()) {
+             User user = iterator.next();
+             manager.print(user);
+         }
+
+         System.out.println("");
+
          Book book1 = this.find("それから");
          this.remove(book1);
         // this.list();
@@ -436,8 +450,10 @@ public class Library {
         for(Integer i = 0; i < books.size(); i++) {
             shelf.add(books.get(i));
         }
+    }
 
-
+    void registerUsers() {
+        manager.addUsers(manager.getUsersList());
     }
 
     /**
@@ -447,7 +463,7 @@ public class Library {
     public static void main(String[] args) {
         Library lib = new Library();
         lib.run();
-        UserManager userManager = new UserManager();
-        userManager.run();
+//        UserManager userManager = new UserManager();
+//        userManager.run();
     }
 }

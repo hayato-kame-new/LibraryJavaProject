@@ -12,9 +12,17 @@ public class UserManager {
 
     // メソッド宣言の外側で宣言された変数(このlist1のような場所で宣言された変数)は， フィールドと呼ばれます
     // 変数usersLisを，フィールドに変更して，クラス内のメソッドから参照できるようにします
-     List<User> usersList = new ArrayList<User>();  // このshelfは、mainメソッドでrunメソッドを呼び出した時に、
+     private List<User> usersList = new ArrayList<User>();  // このshelfは、mainメソッドでrunメソッドを呼び出した時に、
      // runメソッドの中で this.addUsers(usersList);を実行してリストの中身を作っています
 
+     // アクセッサ
+     public List<User> getUsersList() {
+         return usersList;
+     }
+     // アクセッサ
+     public void setUsersList(List<User> usersList) {
+         this.usersList = usersList;
+     }
      /**
       * mainパッケージのLibraryクラス内の mainメソッドに
       * このクラスのインスタンスを生成して、runメソッドを実行します
@@ -71,6 +79,7 @@ public class UserManager {
 
     }
 
+
     /**
      * 参照しかできないUserの集合を返す   Iterator型 (列挙子) という集合を返す
      * UserManagerクラスの外でも、安全に全ユーザを参照できるようになります
@@ -111,9 +120,10 @@ public class UserManager {
 
     /**
      * 引数に受け取ったUser オブジェクトの情報を画面に出力するメソッド
+     * public にすること
      * @param user
      */
-    void print(User user) {
+    public void print(User user) {
         System.out.printf("%d %s %d %d %s %d %s %s%n", user.getId(), user.getName(), user.getGender(), user.getAge(), user.getPass(), user.getRoll(), user.getMail(), user.getTel());
     }
 
@@ -129,9 +139,10 @@ public class UserManager {
 
     /**
      * run()メソッドの初めでusers.csvファイルを読み込んで、フィールドのusersList
+     * 他のパッケージからも見えるようにするには pulicの修飾子をつけます mainパッケージのLibrary.javaで使います
      * @param usersList
      */
-    void addUsers(List<User> usersList) {
+    public void addUsers(List<User> usersList) {
     // プロジェクトのルートフォルダにおいたusers.csvファイルを読み込む
          UserUtil util = new UserUtil();
         List<User> users = util.readFromFile("users.csv");
