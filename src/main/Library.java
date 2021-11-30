@@ -1,23 +1,32 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import controller.UserManager;
 import model.Book;
+import model.History;
 import model.User;
 import util.LibraryUtil;
 
 public class Library {
-
+    // フィールド宣言
     // メソッド宣言の外側で宣言された変数(このlist1のような場所で宣言された変数)は， フィールドと呼ばれます
     // 変数shelfを，フィールドに変更して，クラス内のメソッドから参照できるようにします
      List<Book> shelf = new ArrayList<Book>();  // このshelfは、mainメソッドでrunメソッドを呼び出した時に、
      // runメソッドの中で this.addBooks(shelf);を実行してリストの中身を作っています
 
      UserManager manager = new UserManager();
+
+     /**
+      * 本のインスタンスがキー その本に関する情報としてその本の今までの貸出記録が値
+      */
+     Map<Book, List<History>> historyMap = new HashMap<Book, List<History>>();
 
      /**
       * 作成したインスタンスメソッドをrun メソッドから呼び出して本の情報を操作していきます
@@ -119,6 +128,68 @@ public class Library {
 //            this.printBook(book);
 //        }
 
+     }
+
+     Boolean registerHistory(History history){
+            List<History> histories =
+                historyMap.get(history.getBook());
+            if(histories == null){
+                histories = new ArrayList<History>();
+                historyMap.put(history.getBook(), histories);
+            }
+            if(this.canLend(history, histories)){
+                histories.add(history);
+                return true;
+            }
+            return false;
+        }
+
+         /**
+          * 貸し出しができるか判定する
+          *
+          * @param history   これから貸し出そうとしている History型の実体
+          * @param histories  これから貸し出そうとする本に関する これまでの貸し出し履歴であるHistory のリスト
+          * @return true:貸出可能 <br /> false:貸出不可
+          */
+        Boolean canLend(History history, List<History> histories){
+            // まず、これから貸し出そうとしている本が，この図書館システムが管理している本のリストshelf に存在するかを判定
+            // containsメソッドで コレクション変数shelfの中に 引数に渡された本が含まれているかを判定する
+            //  ! で 判定を逆にしてるから 含まれていなければ falseを返す
+            if(!this.shelf.contains(history.getBook())){
+                return false;  // これから貸し出そうとする本は、図書館システムには無い本なので 貸出できません
+                // 貸出できないので、returnで即メソッドを終了させて、呼び出し元に引数の falseを返します。
+                // このメソッドはreturnしたので、この行以降は実行されない
+            }
+
+            // これから貸し出そうとする本は、この図書館システムに有るので、貸出できます。(貸出中じゃなければ)
+            // 次に、貸し出し中かどうか調べます
+            // その本の貸出履歴が存在しない場合 つまり histories.size() == 0 は，今まで借りられたことがないため，貸し出し可能
+            // その本の貸出履歴があったら histories.size() > 0 だったら、貸出可能かどうかを調べる
+            if(histories.size() > 0){  // その本に関する今までの貸出記録があれば
+                // その本に関する最後の貸出記録の実態を取得する
+                // List<History> は、 右辺が new ArrayList<Hirstory>(); で初期化されてるため、ArrayListは、中身は配列と同じ構造なので、
+                //  履歴は順に格納されるため，最後の要素が貸し出し中でなければ貸し出し可能です
+                History lastHistory = histories.get(histories.size() - 1);
+                if(lastHistory.isLent()){  // 最後の貸出記録を調べてる isLent()は 貸出中ならtrueを返す
+                    return false;  // isLent()かtrueを返したので、貸出中だから falseを返す 貸出不可です
+                }
+            }
+            return true;  // 貸出可能です
+        }
+
+     /**
+      * 引数に受け取った値を元にHistory 型の実体を作成して返す
+      * @param user
+      * @param book
+      * @return
+      */
+     History createHistory(User user, Book book) {
+         History history = new History();
+         history.setUser(user);
+         history.setBook(book);
+         history.setLendDate(new Date());
+
+         return history;
      }
 
      /**

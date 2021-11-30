@@ -37,14 +37,15 @@ public class History {
 
 
     /**
-     * 貸し出し中であるかを判定するメソッド
+     * 貸し出し中であるかを判定するメソッド 異なるパッケージから見えるようにするため publicにする
+     * Library.java の 173行目付近で使う
      * 貸し出し中であれば，true， 貸し出し中でなければfalseを返す
      * 貸し出し中である，ということはまだ返却されていないということ
      * returnDateにまだ値が代入されていないことを表します
      * 貸し出された時に初めてHistory型のオブジェクトが生成される
      * @return true:貸出中 <br /> false:貸出中ではない
      */
-    Boolean isLent() {
+    public Boolean isLent() {
         if(this.returnDate == null) {  // 貸出中である
             return true;  // 貸出中なら tureを返す
         }
