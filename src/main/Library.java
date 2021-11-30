@@ -130,13 +130,23 @@ public class Library {
 
      }
 
+     /**
+      * 履歴(history)を登録する
+      * 履歴を登録してるだけで、貸出の処理は実行してない
+      * この後、このregisterHistoryメソッドがtrueを返せば、この本を貸し出し処理を行うlendメソッドを実行して、貸出し完了する
+      * @param history これから登録しようとする履歴historyのインスタンス
+      * canLendメソッドを呼び出して、貸出できるかどうかを判定してる canLendがtrueを返せば貸し出せる falseを返せば貸出不可
+      *
+      * @return true:貸出し履歴に登録しました(履歴を登録しただけ)< br /> false:貸出履歴に登録してません(履歴を登録しない)
+      */
      Boolean registerHistory(History history){
-            List<History> histories =
-                historyMap.get(history.getBook());
-            if(histories == null){
-                histories = new ArrayList<History>();
-                historyMap.put(history.getBook(), histories);
+         // 自分自身のインスタンスフィールドのthis.historyMapからキー(本インスタンス) で 値(その本に関する履歴のリスト)を取得する
+            List<History> histories = this.historyMap.get(history.getBook());
+            if(histories == null){  // その本に関しての貸出し履歴は無いnullだと参照先が無い 指し示すのが無い つまり一度も貸し出されたことが無い
+                histories = new ArrayList<History>();  // new でメモリを確保して、コンストラクタで初期化する
+                historyMap.put(history.getBook(), histories);  // putで作成（追加）更新も作成（追加）と同じく，putメソッドで行います． 従来のキーに結びついていたバリューを削除し，キーとバリューを新たに結びつけます．
             }
+
             if(this.canLend(history, histories)){
                 histories.add(history);
                 return true;
