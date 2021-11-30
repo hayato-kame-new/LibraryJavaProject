@@ -3,7 +3,7 @@ package model;
 public class User {
 
     // カプセル化のために、privateにする
-    private Integer id;   // データベース化した時の主キーとなる
+    private Integer id;   // データベース化した時の主キーとなる 主キーなのでユニークです(一意制約)
 
     private String name;
 

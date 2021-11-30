@@ -68,6 +68,7 @@ public class Library {
 
          this.addBooks(shelf);
          this.registerUsers();
+         // 元のリストに変更を加えることなく安全に扱うために Iterator型( 列挙子型の)リストで参照する
          Iterator<User> iterator = manager.iterator();
       // 列挙子を使った繰り返し 重要
          while(iterator.hasNext()) {
@@ -127,7 +128,104 @@ public class Library {
 //            Book book = shelf.get(i);
 //            this.printBook(book);
 //        }
+         this.runLend();
+         for (Map.Entry< Book, List<History>> entry : this.historyMap.entrySet()) {
+             Book book = entry.getKey();
+             System.out.print("貸出本:");
+             this.printBook(book);
 
+             List<History> histories = entry.getValue();
+             for(History history : histories) {
+                 System.out.println( history.getLendDate() + "~" + history.getReturnDate());
+             }
+         }
+     }
+
+     /**
+      * run()メソッドの中で実行する
+      * 貸出を実行して、Mapに登録する 中でlendメソッドを実行する
+      */
+     void runLend() {
+         User user1 = manager.find(1);
+         User user2 = manager.find(2);
+         User user3 = manager.find(3);
+
+         History history1 = null;
+         History history2 = null;
+         if(user1 != null) {
+             history1 = this.createHistory(user1, this.shelf.get(0));
+             history2 = this.createHistory(user1, this.shelf.get(1));
+         }
+         if(this.registerHistory(history1)) { // registerHistoryでtrueを返したら lendを実行する
+
+             // lendメソッドを実行すると、成功するとhistoryインスタンスが返り、失敗すれば nullが返る
+            history1 = this.lend(user1, this.shelf.get(0));  // 実行される
+            if(history1 != null) {
+                // Mapに追加する(更新)
+                this.historyMap.put(this.shelf.get(0), this.historyMap.get(history1.getBook()));
+            }
+         }
+         if(this.registerHistory(history2)) {
+             history2 = this.lend(user1, this.shelf.get(1)); // 実行される
+             if(history2 != null) {
+                 // Mapに追加する(更新)
+                 this.historyMap.put(this.shelf.get(1), this.historyMap.get(history2.getBook()));
+             }
+         }
+
+         History history3 = null;  // history3 は失敗する
+         History history4 = null;
+         if(user2 != null) {
+             history3 = this.createHistory(user2, this.shelf.get(1));  // 同じ本を借りようとしてる 失敗するはず
+             history4 = this.createHistory(user2, this.shelf.get(2));
+         }
+         if(this.registerHistory(history3)) {  // falseが返るはず
+             history3 = this.lend(user2, this.shelf.get(1));  // ここは実行されないはず
+             if(history3 != null) {   // 実行されない
+                 // Mapに追加する(更新)
+                 this.historyMap.put(this.shelf.get(1), this.historyMap.get(history2.getBook())); // 実行されない
+             }
+         }
+         if(this.registerHistory(history4)) {
+             history4 = this.lend(user2, this.shelf.get(2));  // 実行される
+             if(history4 != null) {
+                 // Mapに追加する(更新)
+                 this.historyMap.put(this.shelf.get(2), this.historyMap.get(history4.getBook()));
+             }
+         }
+
+         History history5 = null;
+         if(user3 != null) {
+             history5 = this.createHistory(user3, this.shelf.get(3));
+         }
+         if(this.registerHistory(history5)) {
+             history5 = this.lend(user3, this.shelf.get(3));  // 実行される
+             if(history5 != null) {
+                 // Mapに追加する(更新)
+                 this.historyMap.put(this.shelf.get(3), this.historyMap.get(history5.getBook()));
+             }
+         }
+     }
+
+     /**
+      * もし、registerHistoryメソッドがtrueを返したら、このメソッドを使用して貸出処理をする
+      * 貸し出し処理を実行する このlendメソッドは、runLendメソッドの中で使われる
+      * @param user
+      * @param book
+      * @return Historyインスタンス 貸出しない場合は nullを返す
+      */
+     History lend(User user, Book book) {
+         // 引数に与えられたuserが本を借りた履歴を作成する
+         History history = this.createHistory(user, book);
+         // 作成した履歴を 貸出記録へ記録する 戻り値はBoolean型です 貸出可能ならtrueが返り貸出記録へ記録されてます
+         // 貸出不可なら、falseが返ります
+         if(this.registerHistory(history)) {
+              // trueを返せば貸出記録に記録してるので 登録したHistoryの実体を返します
+            return history;
+         } else {
+             // falseを返せば、貸し出せないので貸出記録には何もしてない nullを返す
+             return null;
+         }
      }
 
      /**
@@ -155,7 +253,7 @@ public class Library {
         }
 
          /**
-          * 貸し出しができるか判定する
+          * 貸し出しができるか判定する registerHistoryメソッドの中で使う
           *
           * @param history   これから貸し出そうとしている History型の実体
           * @param histories  これから貸し出そうとする本に関する これまでの貸し出し履歴であるHistory のリスト
@@ -533,6 +631,10 @@ public class Library {
         }
     }
 
+    /**
+     * csvファイルから読み込んでフィールドに値を設定するメソッド
+     * 自分自身のフィールドのUserManagerインスタンスがもつ usersListフィールに値をセットします
+     */
     void registerUsers() {
         manager.addUsers(manager.getUsersList());
     }

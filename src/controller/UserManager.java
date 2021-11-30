@@ -79,6 +79,30 @@ public class UserManager {
 
     }
 
+    /**
+     * idが同じUserインスタンスを検索し、見つかればUserインスタンスを返し、見つからない時には nullを返す
+     * @param id
+     * @return Userインスタンス  見つからない時は nullを返す
+     */
+    public User find(Integer id ) {
+        // 読み取り専門 Iterator型(列挙子型)のUserのリストを取得する
+        Iterator<User> iterator = this.iterator();
+        // 列挙子を使った繰り返し処理 繰り返しの終了条件は iterator.hasNext()
+        User user = null;
+        while(iterator.hasNext()) {
+            // ループの中で、比較する
+            user = iterator.next();
+            // 注意 intの比較ではなくて Integerの比較です Integerは参照型です
+            if(user.getId().equals(id)) {  // Integerは参照型の比較になるので == ではなくて equalsで比較する
+                break;  // すぐにループを抜けて、最終業のreturnで 一致したuserインスタンスを返します
+            } else if (!user.getId().equals(id)) {  // idが一致しないなら userインスタンスにnullを代入して返す
+                user = null;
+            }
+        }
+        return user;
+
+    }
+
 
     /**
      * 参照しかできないUserの集合を返す   Iterator型 (列挙子) という集合を返す
