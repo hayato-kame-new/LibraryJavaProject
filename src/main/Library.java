@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -164,6 +165,53 @@ public class Library {
          System.out.println("Mapの  キーとバリューのペア集合を表示します Iterator列挙子を用いてない 拡張forを用いて");
          this.printMapKeyAndValue(historyMap);
 
+     }
+
+
+     // このメソッドは runFindHistoryメソッドの中で使われます
+     List<History> findHistory(Book book, User user) {
+         // 結果として返すための resultList を newで確保
+         List<History> resultList = new ArrayList<History>();
+         // キーは重複を許さないから キーを元にして見つけた バリューは一意
+         List<History> keyFindHistories = new ArrayList<History>();
+             // キーは一位なので、見つかる値も一つのコレクションだけ もしくは null
+         if(book != null) {  // キーが nullじゃなければ キーを元に検索する
+             keyFindHistories = this.historyMap.get(book);  // キーを元に バリューを取得する
+
+            //  keyFindHistories nullじゃ無いなら さらに絞り込む
+            // この keyFindHistoriesの中の要素に、引数のuserインスタンスに一致するHistoryインスタンスが有るのか調べる
+            if(keyFindHistories != null ) {
+                for(History history: keyFindHistories) {
+                    if(user != null && history.getUser().equals(user)) {
+                        // 一致したなら
+                        resultList.add(history);  // キーが指定されてたなら、一意になる
+                    }
+
+                    if (user == null) {
+                        // userが nullなら キーとなるBookを指定して得られたバリューが返り値そのものになります
+                        resultList = keyFindHistories;  // 参照を代入する 参照渡しする
+                    }
+                }
+            }
+         } else {  // bookがnullの場合は Map に格納されているすべてのバリューに対して検索を行わなければいけない
+             // そして 各バリューに対して，Userで絞り込む
+             Collection<List<History>> collection = this.historyMap.values();
+             for(List<History> histories : collection) {
+                 for(History history : histories) {
+                     if(user != null && history.getUser().equals(user)) {
+                         // 一致したなら
+                         resultList.add(history);  // キーが指定されて無いので、 結果には複数になることもある
+                     }
+
+                     if (user == null) {
+                         // userが nullなら キーも指定してないので 何もない nullを代入する
+                         resultList = null;  // nullは参照先がない 何も指し示さないこと
+                     }
+                 }
+             }
+         }
+
+         return resultList;
      }
 
      // Mapからの列挙子の取得方法
