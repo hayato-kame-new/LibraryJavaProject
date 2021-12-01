@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import controller.UserManager;
 import model.Book;
@@ -68,6 +69,10 @@ public class Library {
 //        System.out.printf("%s (%s) %s, %d%n", book1.title, book1.authors, book1.publisher, book1.publishYear);
 
          this.addBooks(shelf);
+         for(Book book : shelf) {
+
+             this.printBook(book);
+         }
          this.registerUsers();
          // 元のリストに変更を加えることなく安全に扱うために Iterator型( 列挙子型の)リストで参照する
          Iterator<User> iterator = manager.iterator();
@@ -165,6 +170,48 @@ public class Library {
          System.out.println("Mapの  キーとバリューのペア集合を表示します Iterator列挙子を用いてない 拡張forを用いて");
          this.printMapKeyAndValue(historyMap);
 
+         System.out.println("");
+         System.out.println("検索結果を表示します");
+
+
+         Book book2 = this.shelf.get(1);
+
+         // この検索は見つかる
+         System.out.println("1回目検索");
+         List<History> histories2 = this.runFindHistory(book2, null);
+         for(History h : histories2) {
+             this.printHistory(h);
+         }
+
+         User user1 = manager.find(1);
+         User user2 = manager.find(2);
+
+         // この検索は見つからない
+         System.out.println("２回目検索");
+         List<History> histories3 = this.runFindHistory(book2, user2);
+         for(History h : histories3) {
+             this.printHistory(h);
+         }
+
+         // この検索はすべての本の全ての履歴を表示する
+         System.out.println("3回目検索");
+         List<History> histories4 = this.runFindHistory(null, null);
+         for(History h : histories4) {
+             this.printHistory(h);
+         }
+
+         System.out.println("4回目検索");
+         List<History> histories5 = this.runFindHistory(null, user1);
+         for(History h : histories5) {
+             this.printHistory(h);
+         }
+
+     }
+
+
+
+     List<History> runFindHistory(Book book, User user) {
+         return  this.findHistory(book, user);
      }
 
 
@@ -185,34 +232,50 @@ public class Library {
                     if(user != null && history.getUser().equals(user)) {
                         // 一致したなら
                         resultList.add(history);  // キーが指定されてたなら、一意になる
+                        return resultList;
                     }
 
                     if (user == null) {
                         // userが nullなら キーとなるBookを指定して得られたバリューが返り値そのものになります
                         resultList = keyFindHistories;  // 参照を代入する 参照渡しする
+                        return resultList;
                     }
                 }
             }
          } else {  // bookがnullの場合は Map に格納されているすべてのバリューに対して検索を行わなければいけない
              // そして 各バリューに対して，Userで絞り込む
+             // collection に 全てのバリューを取得
              Collection<List<History>> collection = this.historyMap.values();
-             for(List<History> histories : collection) {
-                 for(History history : histories) {
-                     if(user != null && history.getUser().equals(user)) {
-                         // 一致したなら
-                         resultList.add(history);  // キーが指定されて無いので、 結果には複数になることもある
-                     }
-
-                     if (user == null) {
-                         // userが nullなら キーも指定してないので 何もない nullを代入する
-                         resultList = null;  // nullは参照先がない 何も指し示さないこと
+             if(user != null) {
+                 for(List<History> histories : collection) {
+                     for(History history : histories) {
+                         if( history.getUser().equals(user)) {
+                             resultList.add(history);  //  キーが指定されて無いので、 結果には複数になることもある
+                         }
                      }
                  }
+                     return resultList;
+             } else if (user == null) {
+                 // userが nullなら キーも指定してないので
+                 // 引数のBook，Userの両方が nullであった場合は，Map のバリューの内容をすべて返り値のList に追加し直す必要があります．
+                 // 全てのBookを検索して その全ての履歴も検索する(全てのUser)
+                 Set<Book> allKeySet = this.historyMap.keySet();  // キーのSetを取り出す キーは重複を許さないので インタフェースインタフェースSet<E>型
+                 // インタフェースSet<E>  は Iterable<E> が スーパーインタフェースだから、このインタフェースを実装すると、オブジェクトを「for-eachループ」文の対象にすることができます
+                 for(Book key : allKeySet) {
+                     // ループで keyを全て取り出す ただし、Setは格納した順序は保証されない、Setは順番を保持しません
+                     // その key に対応する バリューを全て表示する
+                     List<History> allHistories = this.historyMap.get(key);
+                     for(History h : allHistories) {
+                         resultList.add(h);  // 結果リストに全部詰める
+                     }
+                 }
+                 return resultList;
              }
          }
-
          return resultList;
-     }
+ }
+
+
 
      // Mapからの列挙子の取得方法
      // Mapの列挙子は３種類存在します．キーの集合，バリューの集合， キーとバリューのペアの集合です．それぞれ取得する方法や返される列挙子が含む型も異なります．
