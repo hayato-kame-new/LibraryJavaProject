@@ -136,9 +136,165 @@ public class Library {
 
              List<History> histories = entry.getValue();
              for(History history : histories) {
-                 System.out.println( history.getLendDate() + "~" + history.getReturnDate());
+                 System.out.println( history.getLendDate() + " ~ " + history.getReturnDate());
              }
          }
+         System.out.println("");
+         System.out.println("MapのキーのBookを表示します Iterator列挙子を用いて");
+         this.printKeySetIte(historyMap);  // Iterator列挙子を用いたやり方
+
+         System.out.println("");
+         System.out.println("MapのキーのBookを表示します Iterator列挙子を用いてない 拡張forを用いて");
+         this.printKeySet(historyMap);  // Iterator列挙子を用いないやり方 こっちの方が一般的
+
+         System.out.println("");
+         System.out.println("Mapの 値 List<History>を表示します Iterator列挙子を用いて");
+         this.printMapValuesIte(historyMap);  // Iterator列挙子を用いたやり方
+
+         System.out.println("");
+         System.out.println("Mapの 値 List<History>を表示します Iterator列挙子を用いてない 拡張forを用いて");
+         this.printMapValues(historyMap);  // Iterator列挙子を用いないやり方 こっちの方が一般的
+
+         // キーとバリューのペア集合を表示
+         System.out.println("");
+         System.out.println("Mapの  キーとバリューのペア集合を表示します Iterator列挙子を用いて");
+         this.printMapKeyAndValueIte(historyMap);
+
+         System.out.println("");
+         System.out.println("Mapの  キーとバリューのペア集合を表示します Iterator列挙子を用いてない 拡張forを用いて");
+         this.printMapKeyAndValue(historyMap);
+
+     }
+
+     // Mapからの列挙子の取得方法
+     // Mapの列挙子は３種類存在します．キーの集合，バリューの集合， キーとバリューのペアの集合です．それぞれ取得する方法や返される列挙子が含む型も異なります．
+
+     /**
+      * キーの集合の列挙子
+      * キーの集合を表示する Iteratorを使う
+      * キーは重複を許しませんので historyMap.keySet()では Setが得られる ただし，Setは順番を保持しません
+      * Map<Book, List<History>>のキー集合に対する Iteratorを使った繰り返し
+      * Map型の変数に対して，keySetメソッドを呼び出し その結果，キー集合のSetが返される
+      * れに対して， iteratorメソッドを呼び出すと キー集合に対する列挙子が取得できます
+      * Iterableインターフェースを実装するクラスのiterator()メソッドを呼び出すと、イテレータを得られます
+      * インタフェースのList  クラスのArrayListは、インタフェースIterable<T>を実装してますので、iterator()を呼び出せます
+      * このインタフェースIterable<T>を実装すると、オブジェクトを「for-eachループ」文の対象にすることができます
+      * ただし，Setは順番を保持しませんので， どのような順序で返されるかはユーザ側では制御できない
+      * 下の拡張for文のやり方のprintKeySetメソッドでもいい
+      *
+      * @param historyMap
+      */
+     void printKeySetIte(Map<Book, List<History>> historyMap) {
+         for(Iterator<Book> i = historyMap.keySet().iterator(); i.hasNext(); ) {
+             Book book = i.next();
+             this.printBook(book);
+         }
+     }
+
+     /**
+      * キーの集合の列挙子
+      * キーの集合を表示する   キーは重複を許しませんので historyMap.keySet()では Setが得られる ただし，Setは順番を保持しません
+      * Iterator列挙子を用いないやり方 拡張for文のやり方 こっちの方が一般的
+      * @param historyMap
+      */
+     void printKeySet(Map<Book, List<History>> historyMap) {
+         for(Book book : historyMap.keySet()) {
+             this.printBook(book);
+         }
+     }
+
+     /**
+      * バリューの集合を表示する
+      * Map<Book, List<History>>のバリューに対する Iterator型 列挙子型 を使った繰り返し バリューの集合の列挙子
+      * Map型の変数に対して，valuesメソッドを呼び出し
+      * その結果，バリューの集合であるCollectionが返されます Collection です Setではありません Mapの値は重複を許すからです
+      * それに対して， iteratorメソッドを呼び出すと，バリュー集合に対する列挙子が取得できます．
+      * バリューは重複を許しますので、Setではありません
+      * List も ArrayListも インタフェースIterable<T>を実装してますので、iterator()を呼び出せます
+      * このインタフェースIterable<T>を実装すると、オブジェクトを「for-eachループ」文の対象にすることができます
+      * ただし，Setは順番を保持しませんので， どのような順序で返されるかはユーザ側では制御できない
+      * 下 の拡張for文のやり方 printMapValuesメソッドでもいい
+      * @param historyMap
+      */
+     void printMapValuesIte(Map<Book, List<History>> historyMap) {
+         for(Iterator<List<History>> i = historyMap.values().iterator(); i.hasNext();  ) {
+              List<History> histories = i.next();
+              for(Iterator<History> j = histories.iterator(); j.hasNext();  ) {
+                  History history = j.next();
+                  this.printHistory(history);
+              }
+         }
+     }
+
+     /**
+      * バリューの集合を表示する 列挙子Iteratorを用いないやり方
+      * 拡張for文を用いて Mapの値を表示する
+      * @param historyMap
+      */
+     void printMapValues(Map<Book, List<History>> historyMap) {
+         for(List<History> histories : historyMap.values()) {
+             for(History history : histories) {
+                 this.printHistory(history);
+             }
+         }
+     }
+
+     // キーとバリューのペア集合の列挙子
+     /**
+      * Map<Book, List<History>>の各ペアに対して， Iteratorを使った繰り返しを行い 表示する
+      * Map型の変数に対して，entrySetメソッドを呼び出します． その結果，キーとバリューのペアの集合であるSetが返されます
+      * それに対して， iteratorメソッドを呼び出すと，ペア集合に対する列挙子が取得できます
+      * キーとバリューのペアは Map.Entry型で表される
+      * 拡張for文を用いで下のprintMapKeyAndValueメソッドのようにも書けます
+      * @param historyMap
+      */
+     void printMapKeyAndValueIte(Map<Book, List<History>> historyMap) {
+         for(Iterator<Map.Entry<Book, List<History>>> i = historyMap.entrySet().iterator(); i.hasNext();  ) {
+            Map.Entry<Book, List<History>> entry = i.next();  // キーとバリューのペア集合を取得してる
+            Book key = entry.getKey();
+            List<History> value = entry.getValue();
+            // key, value に対する処理を書けば良い
+            System.out.println("[キー]");
+            this.printBook(key);
+
+            System.out.println("[バリュー]");
+            for(History history : value) {
+                this.printHistory(history);
+            }
+            System.out.println("");
+         }
+     }
+
+     /**
+      *
+      * キーとバリューのペアは Map.Entry型で表される
+      *
+      * @param historyMap
+      */
+     void printMapKeyAndValue(Map<Book, List<History>> historyMap) {
+         for(Map.Entry<Book, List<History>> entry: historyMap.entrySet()){
+                Book key = entry.getKey();
+                List<History> value = entry.getValue();
+                // key, value に対する処理．
+                System.out.println("[キー]");
+                this.printBook(key);
+
+                System.out.println("[バリュー]");
+                for(History history : value) {
+                    this.printHistory(history);
+                }
+                System.out.println("");
+            }
+     }
+
+     /**
+      * 貸出し情報を表示する
+      * @param history
+      */
+     void printHistory(History history) {
+         this.printBook(history.getBook());
+         manager.print(history.getUser());
+         System.out.println( history.getLendDate() + " ~ " + history.getReturnDate());
      }
 
      /**
